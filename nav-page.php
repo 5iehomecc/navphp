@@ -1,0 +1,277 @@
+<?php
+session_start();
+$doGz=isset($_SERVER['HTTP_ACCEPT_ENCODING'])&&strpos($_SERVER['HTTP_ACCEPT_ENCODING'],'gzip')!==false;
+if($doGz){ob_start(function($c){$e=gzencode($c,6);return $e?$e:$c;});header('Content-Encoding: gzip');}else{ob_start();}
+header('Cache-Control: no-store,no-cache,must-revalidate');
+header('X-Content-Type-Options: nosniff');
+header('X-Frame-Options: SAMEORIGIN');
+$dataFile=__DIR__.'/nav-data.json';
+function loadData(){global $dataFile;if(file_exists($dataFile)){$d=json_decode(file_get_contents($dataFile),true);if($d&&is_array($d['groups']??null))return $d;}return ['adminHash'=>'44f61792d66021c0030fa37dca5162871345c525f61984b88fa1af16d8117672','siteName'=>'E家导航','siteDesc'=>'E家导航 - 最实用的经验，分享最需要的你','groups'=>[['id'=>'default','name'=>'默认','emoji'=>'📌','bookmarks'=>[]]]];}
+function saveData($d){global $dataFile;file_put_contents($dataFile,json_encode($d,JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE),LOCK_EX);}
+function isAdmin(){return!empty($_SESSION['admin']);}
+function getDomain($u){$h=parse_url($u,PHP_URL_HOST);return $h?preg_replace('/^www\./','',$h):'';}
+function getFaviconUrl($u){return'https://t0.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://'.getDomain($u).'&size=32';}
+function esc($s){return htmlspecialchars($s??'',ENT_QUOTES,'UTF-8');}
+$data=loadData();$adminMode=isAdmin();
+?>
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title><?=esc($data['siteName'])?> - <?=esc($data['siteDesc'])?></title>
+<meta name="application-name" content="<?=esc($data['siteName'])?>">
+<meta name="theme-color" content="#0a0a0f">
+<link rel="icon" href="https://www.5iehome.cc/favicon.ico">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://t0.gstatic.cn">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=LXGW+WenKai:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+:root{--radius-sm:8px;--radius-md:14px;--radius-lg:20px;--radius-xl:28px;--font-body:'Inter','LXGW WenKai',sans-serif;--font-mono:'SF Mono','JetBrains Mono',monospace;--font-cn:'LXGW WenKai','PingFang SC','Microsoft YaHei','Inter',serif;--transition:0.25s cubic-bezier(0.4,0,0.2,1);--accent:#6c5ce7;--accent-light:#a29bfe;--accent-glow:rgba(108,92,231,0.3);--danger:#e74c3c;--success:#00b894;--sidebar-w:200px}
+[data-theme="dark"]{--bg-primary:#0a0a0f;--bg-secondary:#12121a;--bg-card:rgba(255,255,255,0.04);--bg-card-hover:rgba(255,255,255,0.07);--bg-glass:rgba(255,255,255,0.06);--border-glass:rgba(255,255,255,0.08);--border-glass-hover:rgba(255,255,255,0.15);--text-primary:rgba(255,255,255,0.92);--text-secondary:rgba(255,255,255,0.55);--text-muted:rgba(255,255,255,0.3);--shadow-card:0 4px 24px rgba(0,0,0,0.3);--shadow-float:0 12px 48px rgba(0,0,0,0.5);--mesh-c1:rgba(108,92,231,0.12);--mesh-c2:rgba(0,184,148,0.08);--mesh-c3:rgba(162,155,254,0.05);--noise-opacity:0.03;--cell-bg:rgba(255,255,255,0.02);--cell-hover:rgba(255,255,255,0.06);--input-bg:rgba(255,255,255,0.04);--btn-overlay:rgba(0,0,0,0.5);--favicon-bg:rgba(255,255,255,0.06);--dash-border:rgba(255,255,255,0.08);--emoji-hover:rgba(255,255,255,0.1);--action-hover:rgba(255,255,255,0.06);--sidebar-bg:rgba(18,18,26,0.85);--sidebar-border:rgba(255,255,255,0.06);--nav-item-hover:rgba(255,255,255,0.06);--nav-item-active:rgba(108,92,231,0.15);--gi-0-b:rgba(108,92,231,0.2);--gi-0-c:#a29bfe;--gi-1-b:rgba(0,184,148,0.2);--gi-1-c:#55efc4;--gi-2-b:rgba(253,203,110,0.2);--gi-2-c:#fdcb6e;--gi-3-b:rgba(232,67,147,0.2);--gi-3-c:#fd79a8;--gi-4-b:rgba(9,132,227,0.2);--gi-4-c:#74b9ff;--gi-5-b:rgba(255,118,117,0.2);--gi-5-c:#ff7675}
+[data-theme="light"]{--bg-primary:#f5f5f7;--bg-secondary:#fff;--bg-card:rgba(0,0,0,0.03);--bg-card-hover:rgba(0,0,0,0.05);--bg-glass:rgba(255,255,255,0.7);--border-glass:rgba(0,0,0,0.08);--border-glass-hover:rgba(0,0,0,0.15);--text-primary:rgba(0,0,0,0.88);--text-secondary:rgba(0,0,0,0.5);--text-muted:rgba(0,0,0,0.26);--shadow-card:0 4px 24px rgba(0,0,0,0.06);--shadow-float:0 12px 48px rgba(0,0,0,0.1);--mesh-c1:rgba(108,92,231,0.06);--mesh-c2:rgba(0,184,148,0.04);--mesh-c3:rgba(162,155,254,0.03);--noise-opacity:0.015;--cell-bg:rgba(0,0,0,0.02);--cell-hover:rgba(0,0,0,0.04);--input-bg:rgba(0,0,0,0.03);--btn-overlay:rgba(255,255,255,0.8);--favicon-bg:rgba(0,0,0,0.04);--dash-border:rgba(0,0,0,0.08);--emoji-hover:rgba(0,0,0,0.06);--action-hover:rgba(0,0,0,0.05);--sidebar-bg:rgba(255,255,255,0.85);--sidebar-border:rgba(0,0,0,0.06);--nav-item-hover:rgba(0,0,0,0.04);--nav-item-active:rgba(108,92,231,0.1);--gi-0-b:rgba(108,92,231,0.12);--gi-0-c:#6c5ce7;--gi-1-b:rgba(0,184,148,0.12);--gi-1-c:#00b894;--gi-2-b:rgba(253,203,110,0.15);--gi-2-c:#e17055;--gi-3-b:rgba(232,67,147,0.12);--gi-3-c:#e84393;--gi-4-b:rgba(9,132,227,0.12);--gi-4-c:#0984e3;--gi-5-b:rgba(255,118,117,0.12);--gi-5-c:#d63031}
+body{font-family:var(--font-body);background:var(--bg-primary);color:var(--text-primary);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;transition:background .4s ease,color .4s ease}
+.bg-mesh{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 60% at 10% 20%,var(--mesh-c1),transparent),radial-gradient(ellipse 60% 80% at 85% 70%,var(--mesh-c2),transparent),radial-gradient(ellipse 70% 50% at 50% 50%,var(--mesh-c3),transparent);transition:background .4s ease}
+.bg-noise{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:var(--noise-opacity);background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:128px 128px}
+.layout{display:flex;min-height:100vh;position:relative;z-index:1}
+.sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--sidebar-bg);border-right:1px solid var(--sidebar-border);backdrop-filter:blur(20px);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:10;transition:background .4s ease}
+.sidebar-logo{padding:20px 20px 16px;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--sidebar-border)}
+.sidebar-logo-text{font-family:var(--font-cn);font-size:1.5rem;font-weight:700;letter-spacing:.25em;background:linear-gradient(135deg,var(--accent),var(--accent-light),#74b9ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sidebar-clock{padding:16px 16px 14px;border-bottom:1px solid var(--sidebar-border);text-align:center}
+.sidebar-clock .clock{font-family:var(--font-mono);font-size:2.4rem;font-weight:300;letter-spacing:.08em;margin-bottom:2px;font-variant-numeric:tabular-nums}
+.sidebar-clock .clock-date{font-family:var(--font-cn);font-size:.8rem;color:var(--text-secondary);letter-spacing:.06em}
+.sidebar-nav{flex:1;overflow-y:auto;padding:12px 10px}
+.sidebar-nav::-webkit-scrollbar{width:3px}
+.sidebar-nav::-webkit-scrollbar-thumb{background:var(--border-glass);border-radius:3px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-md);cursor:pointer;transition:var(--transition);color:var(--text-secondary);font-size:.88rem;border:none;background:none;width:100%;font-family:var(--font-cn);text-align:left;margin-bottom:2px;position:relative;letter-spacing:.04em}
+.nav-item:hover{background:var(--nav-item-hover);color:var(--text-primary)}
+.nav-item.active{background:var(--nav-item-active);color:var(--accent-light)}
+.nav-item-icon{width:28px;height:28px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.nav-item-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-item-count{font-size:.72rem;color:var(--text-muted);background:var(--cell-bg);padding:2px 7px;border-radius:10px}
+.nav-add-group{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-radius:var(--radius-md);cursor:pointer;transition:var(--transition);color:var(--text-muted);border:2px dashed var(--dash-border);background:none;width:100%;font-family:var(--font-cn);font-size:.82rem;margin-top:8px;letter-spacing:.04em}
+.nav-add-group:hover{border-color:var(--accent);color:var(--accent-light)}
+.sidebar-footer{padding:10px;border-top:1px solid var(--sidebar-border);display:flex;flex-direction:column;gap:3px}
+.sidebar-btn{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);color:var(--text-secondary);font-size:.8rem;border:none;background:none;width:100%;font-family:var(--font-cn);text-align:left;letter-spacing:.04em}
+.sidebar-btn:hover{background:var(--nav-item-hover);color:var(--text-primary)}
+.sidebar-btn svg{width:15px;height:15px;flex-shrink:0}
+.sidebar-footer-row{display:flex;gap:3px}
+.sidebar-footer-row .sidebar-btn{flex:1;min-width:0;padding:8px 6px;gap:6px;font-size:.76rem;justify-content:center}
+.theme-toggle{position:relative;width:16px;height:16px;flex-shrink:0}
+.theme-toggle .sun-icon,.theme-toggle .moon-icon{position:absolute;inset:0;transition:opacity .3s ease,transform .3s ease}
+[data-theme="dark"] .theme-toggle .sun-icon{opacity:1;transform:rotate(0)}[data-theme="dark"] .theme-toggle .moon-icon{opacity:0;transform:rotate(-90deg)}
+[data-theme="light"] .theme-toggle .sun-icon{opacity:0;transform:rotate(90deg)}[data-theme="light"] .theme-toggle .moon-icon{opacity:1;transform:rotate(0)}
+.main{flex:1;margin-left:var(--sidebar-w);padding:24px 24px 0;display:flex;flex-direction:column;min-height:100vh}
+.main .groups-container{flex:1;padding-bottom:80px}
+.groups-container{display:flex;flex-direction:column;gap:24px;margin-top:32px}
+.group{background:var(--bg-card);border:1px solid var(--border-glass);border-radius:var(--radius-lg);padding:14px 16px;backdrop-filter:blur(12px);transition:var(--transition);scroll-margin-top:24px}
+.group:hover{border-color:var(--border-glass-hover)}
+.group-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
+.group-title-wrap{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.group-icon{width:24px;height:24px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.group-title{font-family:var(--font-cn);font-size:.98rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.06em}
+.group-actions{display:flex;gap:4px;flex-shrink:0}
+.group-actions button{background:none;border:none;cursor:pointer;width:28px;height:28px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;color:var(--text-muted);transition:var(--transition);font-size:.85rem}
+.group-actions button:hover{background:var(--action-hover);color:var(--text-secondary)}
+.bookmarks-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(max(140px,calc((100% - 10px)/7)),1fr));gap:10px;min-width:0}
+.bookmark-card{display:flex;flex-direction:row;align-items:center;gap:10px;padding:8px 10px;background:var(--cell-bg);border:1px solid transparent;border-radius:var(--radius-md);cursor:pointer;transition:var(--transition);transition-property:background,border-color,transform,box-shadow;text-decoration:none;position:relative;user-select:none;height:48px}
+.bookmark-card:hover{background:var(--cell-hover);border-color:var(--border-glass);transform:translateY(-2px);box-shadow:var(--shadow-card)}
+.bookmark-card:active{transform:translateY(0);transition-duration:.1s}
+.bookmark-favicon{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--favicon-bg);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.bookmark-favicon img{width:22px;height:22px;object-fit:contain}
+.bookmark-favicon .fallback-icon{font-size:.95rem;color:var(--text-muted)}
+.bookmark-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px;overflow:hidden}
+.bookmark-name{font-size:.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:.02em}
+.bookmark-desc{font-size:.7rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;letter-spacing:.03em}
+.bookmark-edit,.bookmark-delete{position:absolute;top:4px;width:22px;height:22px;border-radius:50%;background:var(--btn-overlay);border:none;cursor:pointer;display:none;align-items:center;justify-content:center;color:var(--text-muted);font-size:.7rem;transition:var(--transition);backdrop-filter:blur(4px)}
+.bookmark-edit{right:30px}.bookmark-delete{right:4px}
+.bookmark-card:hover .bookmark-edit,.bookmark-card:hover .bookmark-delete{display:flex}
+.bookmark-edit:hover{background:var(--accent);color:#fff}.bookmark-delete:hover{background:var(--danger);color:#fff}
+.modal-overlay{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,.5);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;animation:fadeIn .2s ease}
+.modal-overlay.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal{background:var(--bg-secondary);border:1px solid var(--border-glass);border-radius:var(--radius-xl);padding:32px;width:100%;max-width:460px;box-shadow:var(--shadow-float);animation:slideUp .3s cubic-bezier(.16,1,.3,1)}
+.modal h2{font-family:var(--font-cn);font-size:1.3rem;font-weight:600;margin-bottom:24px;letter-spacing:.06em}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:.84rem;color:var(--text-secondary);margin-bottom:6px;font-weight:500;font-family:var(--font-cn);letter-spacing:.04em}
+.form-group input{width:100%;padding:12px 14px;background:var(--input-bg);border:1px solid var(--border-glass);border-radius:var(--radius-md);color:var(--text-primary);font-size:.95rem;font-family:var(--font-cn);transition:var(--transition);outline:none;letter-spacing:.03em}
+.form-group input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow)}
+.form-group input::placeholder{color:var(--text-muted)}
+.form-group .input-hint{font-size:.75rem;color:var(--text-muted);margin-top:4px}
+.form-group .input-row{display:flex;gap:8px}
+.form-group .input-row input{flex:1}
+.fetch-btn{padding:12px 16px;background:rgba(108,92,231,.15);border:1px solid rgba(108,92,231,.3);border-radius:var(--radius-md);color:var(--accent-light);cursor:pointer;font-size:.82rem;font-family:var(--font-cn);white-space:nowrap;transition:var(--transition);letter-spacing:.04em}
+.fetch-btn:hover{background:rgba(108,92,231,.25)}.fetch-btn:disabled{opacity:.5;cursor:not-allowed}
+.favicon-preview{display:flex;align-items:center;gap:12px;margin-top:8px}
+.favicon-preview img{width:32px;height:32px;border-radius:6px;background:var(--favicon-bg)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:28px}
+.btn{padding:10px 22px;border-radius:var(--radius-md);font-size:.9rem;font-weight:500;cursor:pointer;font-family:var(--font-cn);transition:var(--transition);border:none;letter-spacing:.04em}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:var(--accent-light);transform:scale(1.02)}
+.btn-secondary{background:var(--input-bg);color:var(--text-secondary);border:1px solid var(--border-glass)}.btn-secondary:hover{background:var(--cell-hover);color:var(--text-primary)}
+.btn-danger{background:rgba(231,76,60,.15);color:var(--danger);border:1px solid rgba(231,76,60,.2)}.btn-danger:hover{background:rgba(231,76,60,.25)}
+.spinner,.loading-spinner{display:inline-block;width:16px;height:16px;border:2px solid var(--border-glass);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+.loading-spinner{border-color:var(--text-muted);border-top-color:var(--accent-light)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg-secondary);border:1px solid var(--border-glass);border-radius:var(--radius-md);padding:12px 24px;font-size:.9rem;box-shadow:var(--shadow-float);z-index:2000;opacity:0;transition:all .3s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.error{border-color:rgba(231,76,60,.3);color:var(--danger)}.toast.success{border-color:rgba(0,184,148,.3);color:var(--success)}
+.gc-0 .group-icon{background:var(--gi-0-b);color:var(--gi-0-c)}.gc-1 .group-icon{background:var(--gi-1-b);color:var(--gi-1-c)}.gc-2 .group-icon{background:var(--gi-2-b);color:var(--gi-2-c)}.gc-3 .group-icon{background:var(--gi-3-b);color:var(--gi-3-c)}.gc-4 .group-icon{background:var(--gi-4-b);color:var(--gi-4-c)}.gc-5 .group-icon{background:var(--gi-5-b);color:var(--gi-5-c)}
+.nc-0{background:var(--gi-0-b);color:var(--gi-0-c)}.nc-1{background:var(--gi-1-b);color:var(--gi-1-c)}.nc-2{background:var(--gi-2-b);color:var(--gi-2-c)}.nc-3{background:var(--gi-3-b);color:var(--gi-3-c)}.nc-4{background:var(--gi-4-b);color:var(--gi-4-c)}.nc-5{background:var(--gi-5-b);color:var(--gi-5-c)}
+.emoji-picker{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;margin-top:8px}
+.emoji-option{width:36px;height:36px;border:none;background:none;cursor:pointer;border-radius:var(--radius-sm);font-size:1.2rem;transition:var(--transition);display:flex;align-items:center;justify-content:center}
+.emoji-option:hover{background:var(--emoji-hover)}.emoji-option.active{background:var(--accent-glow)}
+.admin-only{display:none!important}body.admin-mode .admin-only{display:flex!important}
+.guest-only{display:none!important}body:not(.admin-mode) .guest-only{display:flex!important}
+.mobile-menu-btn{display:none;position:fixed;top:16px;left:16px;z-index:20;background:var(--bg-glass);border:1px solid var(--border-glass);border-radius:var(--radius-sm);padding:10px;cursor:pointer;color:var(--text-secondary);backdrop-filter:blur(12px)}
+.mobile-menu-btn svg{width:20px;height:20px}
+.bg-ghibli{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .8s ease;overflow:hidden}
+.bg-ghibli.active{opacity:1}.bg-ghibli img{width:100%;height:100%;object-fit:cover;transition:filter .4s ease}
+[data-theme="dark"] .bg-ghibli img{filter:brightness(.35) saturate(1.3)}[data-theme="light"] .bg-ghibli img{filter:brightness(.7) saturate(1.1)}
+body.bg-image-active .bg-mesh,body.bg-image-active .bg-noise{opacity:0;transition:opacity .6s ease}
+body.bg-image-active .group{backdrop-filter:blur(24px) saturate(1.3) brightness(1.05);-webkit-backdrop-filter:blur(24px) saturate(1.3) brightness(1.05);border-color:rgba(255,255,255,.12);box-shadow:0 4px 32px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.06)}
+body.bg-image-active{--bg-card:rgba(10,10,15,.35);--bg-card-hover:rgba(10,10,15,.5);--sidebar-bg:rgba(18,18,26,.7);--cell-bg:rgba(255,255,255,.06);--cell-hover:rgba(255,255,255,.1)}
+[data-theme="light"] body.bg-image-active .group{border-color:rgba(255,255,255,.35);box-shadow:0 4px 32px rgba(0,0,0,.08),inset 0 1px 0 rgba(255,255,255,.4)}
+[data-theme="light"] body.bg-image-active{--bg-card:rgba(255,255,255,.3);--bg-card-hover:rgba(255,255,255,.48);--sidebar-bg:rgba(255,255,255,.65);--cell-bg:rgba(0,0,0,.05);--cell-hover:rgba(0,0,0,.08)}
+.bg-preview{margin:8px 10px 4px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border-glass);aspect-ratio:16/9;display:none;position:relative;cursor:pointer}
+.bg-preview.active{display:block}.bg-preview img{width:100%;height:100%;object-fit:cover}
+.bg-preview-label{position:absolute;bottom:0;left:0;right:0;padding:3px 8px;font-size:.65rem;color:rgba(255,255,255,.8);background:linear-gradient(transparent,rgba(0,0,0,.6));font-family:var(--font-cn);letter-spacing:.04em}
+.bg-theme-picker{display:none;padding:0 10px 6px}.bg-theme-picker.active{display:block}
+.bg-theme-title{font-size:.68rem;color:var(--text-muted);margin-bottom:4px;font-family:var(--font-cn);letter-spacing:.04em}
+.bg-theme-options{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.bg-theme-opt{padding:5px 0;border-radius:var(--radius-sm);border:1px solid var(--border-glass);background:var(--cell-bg);color:var(--text-secondary);font-size:.7rem;cursor:pointer;font-family:var(--font-cn);transition:var(--transition);letter-spacing:.03em;text-align:center}
+.bg-theme-opt:hover{background:var(--cell-hover);color:var(--text-primary);border-color:var(--border-glass-hover)}
+.bg-theme-opt.selected{background:var(--accent-glow);color:var(--accent-light);border-color:rgba(108,92,231,.4)}
+.site-footer{text-align:center;padding:32px 0 24px;font-size:.78rem;color:var(--text-muted);font-family:var(--font-cn);letter-spacing:.04em}
+.site-footer a{color:var(--text-muted);text-decoration:none;transition:color .2s ease}
+[data-theme="light"] .site-footer a:hover{color:#000}[data-theme="dark"] .site-footer a:hover{color:#fff}
+@media(max-width:768px){.sidebar{transform:translateX(-100%);transition:transform .3s ease;z-index:100}.sidebar.open{transform:translateX(0)}.main{margin-left:0;padding:16px 12px 0}.mobile-menu-btn{display:block}.bookmarks-grid{grid-template-columns:repeat(auto-fill,minmax(max(120px,calc((100% - 10px)/5)),1fr));gap:8px}.group{padding:12px}.modal{padding:24px;margin:12px}}
+@media(max-width:640px){.bookmarks-grid{grid-template-columns:repeat(auto-fill,minmax(max(110px,calc((100% - 8px)/4)),1fr));gap:8px}}
+@media(max-width:480px){.bookmarks-grid{grid-template-columns:repeat(2,1fr);gap:8px}.bookmark-card{height:44px;padding:6px 8px}.bookmark-favicon{width:28px;height:28px}.bookmark-favicon img{width:20px;height:20px}.bookmark-name{font-size:.75rem}.bookmark-desc{font-size:.65rem}}
+@media(max-width:360px){.bookmarks-grid{grid-template-columns:1fr;gap:8px}.main{padding:12px 10px 0}}
+</style>
+</head>
+<body <?= $adminMode ? 'class="admin-mode"' : '' ?>>
+<div class="bg-mesh"></div><div class="bg-noise"></div>
+<div class="bg-ghibli" id="bgG"><img id="bgI" src="" alt=""></div>
+<button class="mobile-menu-btn" onclick="document.getElementById('sb').classList.toggle('open')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+<div class="layout">
+<aside class="sidebar" id="sb">
+<div class="sidebar-logo"><div class="sidebar-logo-text"><?=esc($data['siteName'])?></div></div>
+<div class="sidebar-clock"><div class="clock" id="clk">00:00</div><div class="clock-date" id="clkD"></div></div>
+<nav class="sidebar-nav" id="sNav">
+<?php foreach($data['groups'] as $gi=>$g):?>
+<button class="nav-item" onclick="sG('<?=esc($g['id'])?>')"><span class="nav-item-icon nc-<?=$gi%6?>"><?=esc($g['emoji'])?></span><span class="nav-item-name"><?=esc($g['name'])?></span><span class="nav-item-count"><?=count($g['bookmarks'])?></span></button>
+<?php endforeach;?>
+<?php if($adminMode):?>
+<button class="nav-add-group" onclick="oGM()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>添加分组</button>
+<?php endif;?>
+</nav>
+<div class="bg-preview" id="bgP" onclick="tBg()"><img id="bgPI" src="" alt=""><div class="bg-preview-label" id="bgPL">乡村 · 日间</div></div>
+<div class="bg-theme-picker" id="bgTP"><div class="bg-theme-title">选择背景风格</div><div class="bg-theme-options" id="bgTO"></div></div>
+<div class="sidebar-footer">
+<div class="sidebar-footer-row">
+<button class="sidebar-btn" onclick="tT()"><div class="theme-toggle"><svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg><svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg></div><span id="tL">日间模式</span></button>
+<button class="sidebar-btn" onclick="tBg()" id="bgB"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span id="bgL">背景</span></button>
+</div>
+<?php if($adminMode):?><div class="sidebar-footer-row admin-only"><form method="POST" action="nav-api.php?action=logout" style="width:100%"><button type="submit" class="sidebar-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>退出管理</button></form></div><?php endif;?>
+<?php if(!$adminMode):?><button class="sidebar-btn guest-only" onclick="oLM()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>管理员登录</button><?php endif;?>
+</div>
+</aside>
+<div class="main">
+<div class="groups-container" id="gC">
+<?php foreach($data['groups'] as $gi=>$g):?>
+<div class="group gc-<?=$gi%6?>" id="g-<?=esc($g['id'])?>">
+<div class="group-header">
+<div class="group-title-wrap"><div class="group-icon"><?=esc($g['emoji'])?></div><div class="group-title"><?=esc($g['name'])?></div></div>
+<?php if($adminMode):?>
+<div class="group-actions">
+<button onclick="oBM('<?=esc($g['id'])?>')" title="添加网站"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+<button onclick="oGM('<?=esc($g['id'])?>')" title="编辑分组"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+<button onclick="cDG('<?=esc($g['id'])?>')" title="删除分组"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></button>
+</div><?php endif;?>
+</div>
+<div class="bookmarks-grid">
+<?php foreach($g['bookmarks'] as $bm):?>
+<a class="bookmark-card" href="<?=esc($bm['url'])?>" target="_blank" rel="noopener">
+<?php if($adminMode):?><button class="bookmark-edit" onclick="event.preventDefault();oBM('<?=esc($g['id'])?>','<?=esc($bm['id'])?>')" title="编辑"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="bookmark-delete" onclick="event.preventDefault();cDB('<?=esc($g['id'])?>','<?=esc($bm['id'])?>')" title="删除"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button><?php endif;?>
+<div class="bookmark-favicon" data-url="<?=esc($bm['url'])?>"><img src="<?=esc($bm['favicon']??getFaviconUrl($bm['url']))?>" alt="" loading="lazy" onerror="tnF(this)"></div>
+<div class="bookmark-info"><div class="bookmark-name"><?=esc($bm['name'])?></div><?php if(!empty($bm['desc'])):?><div class="bookmark-desc"><?=esc($bm['desc'])?></div><?php endif;?></div>
+</a><?php endforeach;?>
+</div></div><?php endforeach;?>
+<?php if(empty($data['groups'])&&$adminMode):?><p style="color:var(--text-muted);text-align:center;padding:40px">暂无分组，点击左侧"添加分组"开始</p><?php endif;?>
+</div>
+<footer class="site-footer">Copyright &copy; <a href="https://www.5iehome.cc" target="_blank">E家分享</a></footer>
+</div></div>
+
+<div class="modal-overlay" id="bmM"><div class="modal"><h2 id="bmMT">添加书签</h2>
+<div class="form-group"><label>网址</label><div class="input-row"><input type="url" id="bmU" placeholder="https://example.com" oninput="onUI()"><button class="fetch-btn" id="fB" onclick="fSI()">自动获取</button></div><div class="input-hint">输入网址后点击"自动获取"</div></div>
+<div class="form-group"><label>名称</label><input type="text" id="bmN" placeholder="网站名称" maxlength="40"></div>
+<div class="form-group"><label>描述</label><input type="text" id="bmD" placeholder="网站描述（可选）" maxlength="40"></div>
+<div class="form-group"><label>图标地址</label><div class="input-row"><input type="url" id="bmF" placeholder="自动获取或手动输入"><button class="fetch-btn" id="rFB" onclick="rFv()">重置</button></div><div class="input-hint">留空则自动抓取，也可粘贴自定义图标链接</div></div>
+<div class="form-group"><label>预览</label><div class="favicon-preview" id="fP"><span style="color:var(--text-muted)">输入网址后自动获取</span></div></div>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="cM('bmM')">取消</button><button class="btn btn-primary" onclick="sBm()">保存</button></div></div></div>
+
+<div class="modal-overlay" id="gM"><div class="modal"><h2 id="gMT">添加分组</h2>
+<div class="form-group"><label>分组名称</label><input type="text" id="gN" placeholder="例如：常用工具"></div>
+<div class="form-group"><label>图标</label><div class="emoji-picker" id="eP"></div></div>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="cM('gM')">取消</button><button class="btn btn-primary" onclick="sGp()">保存</button></div></div></div>
+
+<div class="modal-overlay" id="cM"><div class="modal"><h2>确认删除</h2><p id="cMsg" style="color:var(--text-secondary);margin-bottom:20px"></p>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="cM('cM')">取消</button><button class="btn btn-danger" id="cBtn">删除</button></div></div></div>
+
+<div class="modal-overlay" id="lM"><div class="modal"><h2>管理员登录</h2>
+<div class="form-group"><label>管理密码</label><input type="password" id="lP" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter')dL()"></div>
+<div class="modal-actions"><button class="btn btn-secondary" onclick="cM('lM')">取消</button><button class="btn btn-primary" onclick="dL()">登录</button></div></div></div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+const E=['📌','🔧','🎮','📚','💼','🎨','🎵','🌍','💡','🔥','⭐','🚀','📱','💻','🏠','❤️','🎯','🔑','☁️','📧','🛒','📷','🎬','🔬','📝','🎪','🌈','🏆','🤖','🧠','🧩','⚡','🛡️','🌐','📊','🎙️','💬','🧪','🎧','🧭','🏛️','📡','⚙️','🪄','🗂️','🧬','🤝','💰'],TK='starnav_theme',BK='starnav_bg_image',BT='starnav_bg_theme',CP='starnav_cache_',CE=604800000;
+let eB=null,eG=null,sE='📌',aG=null;
+const gD=u=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch(e){return u}};
+const gFU=u=>{try{const d=gD(u);return`https://t0.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${d}&size=32`}catch(e){return''}};
+const gFF=u=>{try{const d=gD(u);return[`https://t0.gstatic.cn/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http://${d}&size=32`,`https://ico.kucat.cn/get.php?url=${u}`,`https://icon.horse/icon/${d}`]}catch(e){return[]}};
+function tnF(i){const c=i.parentElement,u=c.dataset.url;if(!u||!u.startsWith('http')){c.innerHTML='<span class="fallback-icon">🔗</span>';return}const f=gFF(u),s=parseInt(i.dataset.s||'0'),n=s+1;if(n<f.length){i.dataset.s=n;i.src=f[n]}else{c.innerHTML='<span class="fallback-icon">🔗</span>'}}
+async function hP(p){const d=new TextEncoder().encode(p+'_starnav_salt_2024'),h=await crypto.subtle.digest('SHA-256',d);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('')}
+function oLM(){document.getElementById('lP').value='';document.getElementById('lM').classList.add('show');setTimeout(()=>document.getElementById('lP').focus(),100)}
+async function dL(){const p=document.getElementById('lP').value;if(!p){sT('请输入密码','error');return}const h=await hP(p),f=new FormData();f.append('action','login');f.append('password',h);try{const r=await fetch('nav-api.php',{method:'POST',body:f}),j=await r.json();if(j.success){cM('lM');sT('登录成功','success');setTimeout(()=>location.reload(),500)}else sT('密码错误','error')}catch(e){sT('登录失败','error')}}
+function rC(){const n=new Date(),h=String(n.getHours()).padStart(2,'0'),m=String(n.getMinutes()).padStart(2,'0');document.getElementById('clk').textContent=`${h}:${m}`;const w=['日','一','二','三','四','五','六'];document.getElementById('clkD').textContent=`${n.getFullYear()}年${n.getMonth()+1}月${n.getDate()}日 星期${w[n.getDay()]}`}
+function uFP(u){const p=document.getElementById('fP');if(u)p.innerHTML=`<img src="${u}" alt="" onerror="this.style.display='none'"><span style="display:none;color:var(--text-muted)">无法加载</span>`}
+async function fSI(){const i=document.getElementById('bmU');let u=i.value.trim();if(!u)return;if(!/^https?:\/\//i.test(u)){u='https://'+u;i.value=u}const b=document.getElementById('fB'),d=gD(u);b.disabled=true;b.innerHTML='<span class="loading-spinner"></span>';uFP(gFU(u));const c=localStorage.getItem(CP+d);if(c){try{const j=JSON.parse(c);if(Date.now()-j.timestamp<CE&&j.title){document.getElementById('bmN').value=j.title;if(j.favicon)uFP(j.favicon);b.disabled=false;b.textContent='自动获取';return}}catch(e){}}const px=[`https://api.allorigins.win/raw?url=`,`https://corsproxy.io/?url=`,`https://api.codetabs.com/v1/proxy?quest=`];let bh='';const rs=await Promise.allSettled(px.map(async p=>{try{const r=await fetch(p+encodeURIComponent(u),{signal:AbortSignal.timeout(8000),headers:{'Accept':'text/html','Accept-Language':'zh-CN,zh;q=0.9'}});if(r.ok){const t=await r.text();if(t.length>100)return t}}catch(e){}return''}));for(const r of rs)if(r.status==='fulfilled'&&r.value&&r.value.length>bh.length)bh=r.value;let t='',fv='';if(bh.length>100){const ur=new URL(u),p=new DOMParser().parseFromString(bh,'text/html');for(const s of['link[rel="icon"][type="image/svg+xml"]','link[rel="icon"][sizes="192x192"]','link[rel="apple-touch-icon"]','link[rel="icon"]']){const el=p.querySelector(s);if(el&&el.getAttribute('href')){let h=el.getAttribute('href');if(h.startsWith('//'))h='https:'+h;else if(h.startsWith('/'))h=ur.origin+h;else if(!h.startsWith('http'))h=ur.origin+'/'+h;fv=h;break}}t=(p.querySelector('meta[property="og:site_name"]')?.content||p.querySelector('meta[property="og:title"]')?.content||p.querySelector('title')?.textContent||'').trim().replace(/\s+/g,' ');if(fv)uFP(fv);try{localStorage.setItem(CP+d,JSON.stringify({title:t,favicon:fv,timestamp:Date.now()}))}catch(e){}}document.getElementById('bmN').value=t||d;b.disabled=false;b.textContent='自动获取'}
+let fT=null;
+function onUI(){clearTimeout(fT);const u=document.getElementById('bmU').value.trim();if(u&&/^https?:\/\//i.test(u))uFP(gFU(u));fT=setTimeout(()=>{if(u.length>5)fSI()},1200)}
+function rFv(){const u=document.getElementById('bmU').value.trim();if(!u){document.getElementById('bmF').value='';document.getElementById('fP').innerHTML='<span style="color:var(--text-muted)">输入网址后自动获取</span>';return}document.getElementById('bmF').value='';uFP(gFU(u))}
+function oBM(gid,bid){eB={groupId:gid,bookmarkId:bid||null};if(bid){fetch(`nav-api.php?action=getBookmark&groupId=${encodeURIComponent(gid)}&bookmarkId=${encodeURIComponent(bid)}`).then(r=>r.json()).then(bm=>{document.getElementById('bmMT').textContent='编辑书签';document.getElementById('bmU').value=bm.url;document.getElementById('bmN').value=bm.name;document.getElementById('bmD').value=bm.desc||'';document.getElementById('bmF').value=bm.favicon||'';uFP(bm.favicon||gFU(bm.url));document.getElementById('bmM').classList.add('show');setTimeout(()=>document.getElementById('bmU').focus(),100)})}else{document.getElementById('bmMT').textContent='添加书签';document.getElementById('bmU').value='';document.getElementById('bmN').value='';document.getElementById('bmD').value='';document.getElementById('bmF').value='';document.getElementById('fP').innerHTML='<span style="color:var(--text-muted)">输入网址后自动获取</span>';document.getElementById('bmM').classList.add('show');setTimeout(()=>document.getElementById('bmU').focus(),100)}}
+async function sBm(){const u=document.getElementById('bmU').value.trim(),n=document.getElementById('bmN').value.trim(),d=document.getElementById('bmD').value.trim(),cf=document.getElementById('bmF').value.trim();if(!u||!n){sT('请输入网址和名称','error');return}const fu=/^https?:\/\//i.test(u)?u:'https://'+u,fv=cf||gFU(fu),f=new FormData();f.append('action','saveBookmark');f.append('groupId',eB.groupId);f.append('bookmarkId',eB.bookmarkId||'');f.append('url',fu);f.append('name',n);f.append('desc',d);f.append('favicon',fv);try{const r=await fetch('nav-api.php',{method:'POST',body:f}),j=await r.json();if(j.success){cM('bmM');sT(eB.bookmarkId?'书签已更新':'书签已添加','success');setTimeout(()=>location.reload(),500)}else sT('保存失败','error')}catch(e){sT('保存失败','error')}}
+function oGM(gid){eG=gid||null;rEP();if(gid){fetch(`nav-api.php?action=getGroup&groupId=${encodeURIComponent(gid)}`).then(r=>r.json()).then(g=>{document.getElementById('gMT').textContent='编辑分组';document.getElementById('gN').value=g.name;sE=g.emoji;rEP();document.getElementById('gM').classList.add('show');setTimeout(()=>document.getElementById('gN').focus(),100)})}else{document.getElementById('gMT').textContent='添加分组';document.getElementById('gN').value='';sE='📌';rEP();document.getElementById('gM').classList.add('show');setTimeout(()=>document.getElementById('gN').focus(),100)}}
+function rEP(){document.getElementById('eP').innerHTML=E.map(e=>`<button class="emoji-option ${e===sE?'active':''}" onclick="sE='${e}';rEP()">${e}</button>`).join('')}
+async function sGp(){const n=document.getElementById('gN').value.trim();if(!n){sT('请输入分组名称','error');return}const f=new FormData();f.append('action','saveGroup');f.append('groupId',eG||'');f.append('name',n);f.append('emoji',sE);try{const r=await fetch('nav-api.php',{method:'POST',body:f}),j=await r.json();if(j.success){cM('gM');sT(eG?'分组已更新':'分组已添加','success');setTimeout(()=>location.reload(),500)}else sT('保存失败','error')}catch(e){sT('保存失败','error')}}
+function cDG(id){const n=prompt('确认删除分组？输入分组名确认：');if(!n)return;fetch(`nav-api.php?action=getGroup&groupId=${encodeURIComponent(id)}`).then(r=>r.json()).then(g=>{if(g.name===n){const f=new FormData();f.append('action','deleteGroup');f.append('groupId',id);fetch('nav-api.php',{method:'POST',body:f}).then(r=>r.json()).then(j=>{if(j.success){sT('分组已删除','success');setTimeout(()=>location.reload(),500)}else sT('删除失败','error')})}else sT('分组名不匹配','error')})}
+function cDB(g,b){fetch(`nav-api.php?action=getBookmark&groupId=${encodeURIComponent(g)}&bookmarkId=${encodeURIComponent(b)}`).then(r=>r.json()).then(bm=>{if(confirm(`确定要删除书签"${bm.name}"吗？`)){const f=new FormData();f.append('action','deleteBookmark');f.append('groupId',g);f.append('bookmarkId',b);fetch('nav-api.php',{method:'POST',body:f}).then(r=>r.json()).then(j=>{if(j.success){sT('书签已删除','success');setTimeout(()=>location.reload(),500)}else sT('删除失败','error')})}})}
+function tT(){const h=document.documentElement,c=h.getAttribute('data-theme'),n=c==='dark'?'light':'dark';h.setAttribute('data-theme',n);localStorage.setItem(TK,n);uTL();uBg()}
+function uTL(){document.getElementById('tL').textContent=document.documentElement.getAttribute('data-theme')==='dark'?'日间模式':'夜间模式'}
+function iT(){const s=localStorage.getItem(TK);if(s)document.documentElement.setAttribute('data-theme',s);else document.documentElement.setAttribute('data-theme',window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');uTL()}
+const BTM=[{n:'乡村',d:'Studio Ghibli anime style, bright sunny countryside landscape, rolling green hills with wildflowers, fluffy white clouds in blue sky, peaceful rural scenery, watercolor painting, soft warm lighting, vibrant colors',ni:'Studio Ghibli anime style, starry night sky with crescent moon, quiet Japanese village with warm lights, soft moonlight reflecting on river, fireflies glowing in the dark, dark blue purple atmosphere, watercolor painting, dreamy and peaceful'},{n:'海洋',d:'Studio Ghibli anime style, bright seaside cliff overlooking turquoise ocean, gentle waves crashing on rocks, seagulls flying, lighthouse in distance, clear blue sky, watercolor painting, warm sunlight, peaceful coastal scenery',ni:'Studio Ghibli anime style, moonlit ocean at night, silver moonlight path on calm water, distant lighthouse beam, stars reflected on sea surface, bioluminescent plankton glowing on shore, dark blue ocean, watercolor painting, serene and mystical'},{n:'森林',d:'Studio Ghibli anime style, enchanted forest with sunlight filtering through tall ancient trees, mossy ground with mushrooms and small flowers, gentle stream, butterflies and forest spirits, watercolor painting, dappled light, lush green',ni:'Studio Ghibli anime style, mystical forest at night, glowing fireflies among ancient trees, bioluminescent mushrooms on forest floor, moonlight through canopy, small forest spirits with lanterns, deep blue emerald atmosphere, watercolor painting, magical and tranquil'},{n:'天空',d:'Studio Ghibli anime style, floating islands in bright blue sky, waterfalls cascading from clouds, airships sailing between peaks, lush gardens on floating rocks, cotton candy clouds, golden sunlight, watercolor painting, adventurous and whimsical',ni:'Studio Ghibli anime style, floating islands under starlit sky, aurora borealis over cloud cities, glowing crystals on floating rocks, airship with warm cabin lights, shooting stars, deep purple teal atmosphere, watercolor painting, dreamlike'},{n:'花园',d:'Studio Ghibli anime style, beautiful Japanese garden in spring, cherry blossoms falling gently, koi pond with stone bridge, traditional wooden pavilion, butterflies fluttering, watercolor painting, pink green harmonious palette, serene spring day',ni:'Studio Ghibli anime style, moonlit Japanese garden at night, cherry blossoms glowing softly under moonlight, koi pond reflecting stars, paper lanterns illuminating stone path, fireflies dancing, dark purple silver atmosphere, watercolor painting, ethereal beauty'},{n:'雪山',d:'Studio Ghibli anime style, majestic snow-capped mountains at sunrise, golden light illuminating peaks, alpine meadow with wildflowers in foreground, crystal clear lake reflecting mountains, watercolor painting, warm orange blue contrast, grand and peaceful',ni:'Studio Ghibli anime style, snow mountains under starry sky, northern lights dancing above peaks, frozen lake reflecting aurora, warm cabin light at mountain base, deep blue teal atmosphere, watercolor painting, majestic and serene'}];
+const BA='https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image';
+const gBT=()=>{const i=parseInt(localStorage.getItem(BT));return isNaN(i)||i<0||i>=BTM.length?0:i};
+const isBA=()=>localStorage.getItem(BK)==='true';
+const gBI=d=>{const t=BTM[gBT()];return BA+'?prompt='+encodeURIComponent(d?t.ni:t.d)+'&image_size=landscape_16_9'};
+function tBg(){if(isBA()){localStorage.setItem(BK,'false');document.body.classList.remove('bg-image-active');document.getElementById('bgG').classList.remove('active');document.getElementById('bgP').classList.remove('active');document.getElementById('bgTP').classList.remove('active');uBB()}else{localStorage.setItem(BK,'true');document.body.classList.add('bg-image-active');uBg(true);uBB()}}
+function uBg(sl){const g=document.getElementById('bgG'),i=document.getElementById('bgI'),p=document.getElementById('bgP'),pi=document.getElementById('bgPI'),pl=document.getElementById('bgPL');if(!isBA()){g.classList.remove('active');p.classList.remove('active');return}const dk=document.documentElement.getAttribute('data-theme')==='dark',t=BTM[gBT()],u=gBI(dk);if(pl)pl.textContent=t.n+' · '+(dk?'夜间':'日间');document.getElementById('bgTP').classList.add('active');rBTP();if(sl){const b=document.getElementById('bgB');if(b)b.disabled=true;const l=document.getElementById('bgL');if(l)l.innerHTML='<span class="loading-spinner"></span>'}const im=new Image();im.onload=()=>{i.src=u;g.classList.add('active');pi.src=u;p.classList.add('active');if(sl){const b=document.getElementById('bgB');if(b)b.disabled=false;uBB()}};im.onerror=()=>{if(sl){const b=document.getElementById('bgB');if(b)b.disabled=false;uBB();sT('背景图加载失败','error')}};im.src=u}
+function rBTP(){const c=document.getElementById('bgTO');if(!c)return;const ci=gBT();c.innerHTML=BTM.map((t,i)=>`<button class="bg-theme-opt${i===ci?' selected':''}" onclick="sBT(${i})">${t.n}</button>`).join('')}
+function sBT(i){localStorage.setItem(BT,String(i));uBg(true);rBTP()}
+function uBB(){const l=document.getElementById('bgL');if(!l)return;l.textContent=isBA()?'关闭':'背景';const b=document.getElementById('bgB');if(b)b.style.color=isBA()?'var(--accent-light)':''}
+function sG(id){aG=id;const e=document.getElementById('g-'+id);if(e)e.scrollIntoView({behavior:'smooth',block:'start'})}
+function cM(id){document.getElementById(id).classList.remove('show')}
+function sT(m,t=''){const e=document.getElementById('tst');e.textContent=m;e.className='toast'+(t?' '+t:'');requestAnimationFrame(()=>e.classList.add('show'));setTimeout(()=>e.classList.remove('show'),2500)}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show')}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay.show').forEach(m=>m.classList.remove('show'))});
+iT();if(isBA())document.body.classList.add('bg-image-active');uBB();
+setInterval(rC,1000);rC();
+</script>
+</body>
+</html>

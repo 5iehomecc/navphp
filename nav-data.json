@@ -1,0 +1,13 @@
+{
+  "adminHash": "44f61792d66021c0030fa37dca5162871345c525f61984b88fa1af16d8117672",
+  "siteName": "E家导航",
+  "siteDesc": "E家导航 - 最实用的经验，分享最需要的你",
+  "groups": [
+    {
+      "id": "default",
+      "name": "默认",
+      "emoji": "📌",
+      "bookmarks": []
+    }
+  ]
+}
