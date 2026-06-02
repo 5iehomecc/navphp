@@ -7,6 +7,20 @@
             "id": "default",
             "name": "默认",
             "emoji": "📌",
+            "bookmarks": [
+                {
+                    "id": "b6a1ecc16a3aec",
+                    "name": "GitHub",
+                    "url": "https:\/\/github.com\/janhq\/jan",
+                    "desc": "Jan AI",
+                    "favicon": "https:\/\/t0.gstatic.cn\/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http:\/\/jan.ai&size=32"
+                }
+            ]
+        },
+        {
+            "id": "g6a1ecc305510b",
+            "name": "test",
+            "emoji": "⭐",
             "bookmarks": []
         }
     ]
