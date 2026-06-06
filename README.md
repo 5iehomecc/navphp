@@ -1,10 +1,10 @@
-# E家导航
+# StarNav
 
 > 一个轻量、美观、高度可定制的个人导航页面
 
 ## 项目简介
 
-**E家导航** 是一个基于 PHP + JSON 的轻量级个人导航页面，支持书签分组管理、主题切换、AI 生成背景图、自定义 Favicon、分组拖拽排序、数据导出等功能。无需数据库，单文件部署即可使用。
+**StarNav** 是一个基于 PHP + JSON 的轻量级个人导航页面，支持书签分组管理、主题切换、AI 生成背景图、自定义 Favicon、分组拖拽排序、数据导出等功能。无需数据库，单文件部署即可使用。
 
 ##  主要特性
 
@@ -66,8 +66,8 @@
 
 1. **克隆仓库**
    ```bash
-   git clone https://github.com/5iehomecc/navphp.git
-   cd navphp
+   git clone https://github.com/5iehomecc/StarNav.git
+cd StarNav
    ```
 
 2. **启动 PHP 内置服务器**（开发环境）
@@ -111,7 +111,7 @@ server {
 
 1. 打开页面，初始状态下分组和书签为空
 2. 左侧底部点击"管理员登录"
-3. 输入默认密码（参见配置文件）
+3. 输入管理员密码（首次部署后请自行设置）
 4. 登录后即可添加分组、添加书签
 
 ### 拖拽排序
@@ -125,6 +125,8 @@ server {
 - 点击"开始导出"即可下载文件
 
 ### 修改密码
+
+密码以 SHA-256 哈希值存储在 `nav-data.json` 的 `adminHash` 字段中。
 
 修改密码步骤：
 1. 编辑 `nav-data.json` 中的 `adminHash` 字段
@@ -143,9 +145,9 @@ server {
 
 ```json
 {
-  "adminHash": "xxx",
-  "siteName": "E家导航",
-  "siteDesc": "E家导航 - 最实用的经验，分享最需要的你",
+  "adminHash": "44f61792d66021c0030fa37dca5162871345c525f61984b88fa1af16d8117672",
+  "siteName": "StarNav",
+  "siteDesc": "StarNav - 最实用的经验，分享最需要的你",
   "groups": [
     {
       "id": "default",
@@ -253,9 +255,9 @@ php -S localhost:8000
 
 ## 📮 联系方式
 
-- 项目地址：[https://github.com/5iehomecc/navphp](https://github.com/5iehomecc/navphp)
+- 项目地址：[https://github.com/5iehomecc/StarNav](https://github.com/5iehomecc/StarNav)
 - 作者主页：[https://www.5iehome.cc](https://www.5iehome.cc)
 
 ---
 
-**E家导航 v1.7.0** - Copyright © 2026 E家分享
+**StarNav v1.7.0** - Copyright © 2026 StarNav
