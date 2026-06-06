@@ -101,12 +101,10 @@ server {
 
 1. 打开页面，初始状态下分组和书签为空
 2. 左侧底部点击"管理员登录"
-3. 输入默认密码（参见配置文件）
+3. 输入登录密码
 4. 登录后即可添加分组、添加书签
 
 ### 修改密码
-
-默认密码为 `andyr00000`（SHA-256 加密存储在 `nav-data.json` 中）。
 
 修改密码步骤：
 1. 编辑 `nav-data.json` 中的 `adminHash` 字段
@@ -119,37 +117,6 @@ server {
    ```
 3. 将生成的哈希值替换 `adminHash` 字段
 
-## ⚙️ 配置说明
-
-### 数据格式（nav-data.json）
-
-```json
-{
-  "adminHash": "44f61792d66021c0030fa37dca5162871345c525f61984b88fa1af16d8117672",
-  "siteName": "E家导航",
-  "siteDesc": "E家导航 - 最实用的经验，分享最需要的你",
-  "groups": [
-    {
-      "id": "default",
-      "name": "默认",
-      "emoji": "📌",
-      "bookmarks": [
-        {
-          "id": "bm_xxxxx",
-          "url": "https://example.com",
-          "name": "示例网站",
-          "desc": "网站描述",
-          "favicon": "https://t0.gstatic.cn/faviconV2?..."
-        }
-      ]
-    }
-  ]
-}
-```
-
-### 环境变量
-无外部依赖，无需配置环境变量。
-
 ## 🔄 版本历史
 
 | 版本 | 发布日期 | 主要更新 |
@@ -159,19 +126,6 @@ server {
 | v1.4.0 | 2026-05-31 | 配色全面优化、视觉动效增强 |
 | v1.3.0 | 2026-05-30 | 应用 Happy Hues Palette #10 配色 |
 | v1.2.0 | 2026-05-29 | 初始版本发布 |
-
-### 版本回滚
-
-```bash
-# 查看所有版本标签
-git tag -l
-
-# 回滚到指定版本
-git checkout v1.5.0    # 或 v1.4.0, v1.3.0, v1.2.0
-
-# 或者创建回滚分支
-git checkout -b rollback-v1.5.0 v1.5.0
-```
 
 ## 🛠️ 技术栈
 
