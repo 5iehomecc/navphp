@@ -126,8 +126,6 @@ server {
 
 ### 修改密码
 
-默认密码为 `andyr00000`（SHA-256 加密存储在 `nav-data.json` 中）。
-
 修改密码步骤：
 1. 编辑 `nav-data.json` 中的 `adminHash` 字段
 2. 使用以下 PHP 代码生成新哈希：
@@ -145,7 +143,7 @@ server {
 
 ```json
 {
-  "adminHash": "44f61792d66021c0030fa37dca5162871345c525f61984b88fa1af16d8117672",
+  "adminHash": "xxx",
   "siteName": "E家导航",
   "siteDesc": "E家导航 - 最实用的经验，分享最需要的你",
   "groups": [
