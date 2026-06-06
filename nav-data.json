@@ -4,9 +4,9 @@
     "siteDesc": "E家导航 - 最实用的经验，分享最需要的你",
     "groups": [
         {
-            "id": "default",
-            "name": "默认",
-            "emoji": "📌",
+            "id": "g6a2438e0bc540",
+            "name": "222",
+            "emoji": "🔥",
             "bookmarks": [
                 {
                     "id": "b6a1ecc16a3aec",
@@ -18,10 +18,75 @@
             ]
         },
         {
+            "id": "g6a2438e7654be",
+            "name": "4333",
+            "emoji": "🌐",
+            "bookmarks": [
+                {
+                    "id": "b6a2424fe2d94f",
+                    "name": "Google",
+                    "url": "https:\/\/google.com",
+                    "desc": "",
+                    "favicon": "https:\/\/t0.gstatic.cn\/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http:\/\/google.com&size=32"
+                }
+            ]
+        },
+        {
+            "id": "default",
+            "name": "默认",
+            "emoji": "📌",
+            "bookmarks": [
+                {
+                    "id": "b6a2424ad9e619",
+                    "name": "163.com",
+                    "url": "https:\/\/163.com",
+                    "desc": "",
+                    "favicon": "https:\/\/t0.gstatic.cn\/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http:\/\/163.com&size=32"
+                },
+                {
+                    "id": "b6a242ac7549a4",
+                    "name": "E家分享-主站",
+                    "url": "https:\/\/5iehome.cc",
+                    "desc": "",
+                    "favicon": "https:\/\/t0.gstatic.cn\/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http:\/\/5iehome.cc&size=32"
+                },
+                {
+                    "id": "b6a2424d4aa3dd",
+                    "name": "sohu.com - 国内门户新浪网11",
+                    "url": "https:\/\/sohu.com",
+                    "desc": "",
+                    "favicon": "https:\/\/t0.gstatic.cn\/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http:\/\/sohu.com&size=32"
+                }
+            ]
+        },
+        {
             "id": "g6a1ecc305510b",
             "name": "test",
-            "emoji": "⭐",
-            "bookmarks": []
+            "icon": "play",
+            "bookmarks": [
+                {
+                    "id": "b6a2424e6759f3",
+                    "name": "yahoo.com",
+                    "url": "https:\/\/yahoo.com",
+                    "desc": "",
+                    "favicon": "https:\/\/t0.gstatic.cn\/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http:\/\/yahoo.com&size=32"
+                }
+            ],
+            "emoji": "🎨"
+        },
+        {
+            "id": "g6a2438dbf30bc",
+            "name": "111",
+            "emoji": "❤️",
+            "bookmarks": [
+                {
+                    "id": "b6a2424c364cd9",
+                    "name": "sina.com.cn - 新浪",
+                    "url": "https:\/\/sina.com.cn",
+                    "desc": "",
+                    "favicon": "https:\/\/t0.gstatic.cn\/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=http:\/\/sina.com.cn&size=32"
+                }
+            ]
         }
     ]
 }
