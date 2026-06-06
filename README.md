@@ -4,9 +4,9 @@
 
 ## 项目简介
 
-**E家导航** 是一个基于 PHP + JSON 的轻量级个人导航页面，支持书签分组管理、主题切换、AI 生成背景图、自定义 Favicon 等功能。无需数据库，单文件部署即可使用。
+**E家导航** 是一个基于 PHP + JSON 的轻量级个人导航页面，支持书签分组管理、主题切换、AI 生成背景图、自定义 Favicon、分组拖拽排序、数据导出等功能。无需数据库，单文件部署即可使用。
 
-## ✨ 主要特性
+##  主要特性
 
 ### 🎨 界面设计
 - **双主题切换**：深色（深青 + 金色）和浅色（薄荷绿）双主题
@@ -21,6 +21,16 @@
 - **智能 Favicon 抓取**：三级回退（t0.gstatic.cn → ico.kucat.cn → icon.horse）
 - **手动图标地址**：优先级最高，可输入网址自动转换或直接粘贴图标链接
 - **离线缓存**：抓取的书签信息 localStorage 缓存 7 天
+- **简洁卡片布局**：图标+名称一行，描述单独一行（可选，浅色字体）
+
+###  拖拽排序
+- **分组拖拽**：管理员模式下可直接拖拽分组卡片改变排序
+- **实时保存**：拖拽后自动同步到服务器
+- **视觉反馈**：拖拽时半透明高亮、目标分组边框提示
+
+###  数据导出
+- **Bookmarks HTML**：浏览器收藏夹兼容格式（Netscape Bookmark），支持导入到 Chrome/Firefox/Edge
+- **JSON 备份**：完整的 JSON 数据备份，包含分组、书签、描述等全部信息
 
 ### 🔐 管理员功能
 - **密码登录**：SHA-256 + salt 加密存储
@@ -33,7 +43,7 @@
 - **字体异步加载**：`media="print"` + `onload`
 - **Favicon 懒加载**：`loading="lazy"`
 - **HTTP 安全头部**：X-Content-Type-Options、X-Frame-Options、Cache-Control
-- **小体积**：nav-page.php 47KB，nav-api.php 3.5KB
+- **小体积**：nav-page.php 约 47KB，nav-api.php 约 4KB
 
 ## 📦 文件结构
 
@@ -104,6 +114,16 @@ server {
 3. 输入默认密码（参见配置文件）
 4. 登录后即可添加分组、添加书签
 
+### 拖拽排序
+- 登录管理员后，分组卡片支持直接拖拽排序
+- 拖拽时卡片半透明高亮，目标位置边框提示
+- 松开鼠标自动保存新顺序
+
+### 数据导出
+- 管理员模式下左侧显示"数据导出"按钮
+- 点击后选择导出格式（Bookmarks HTML 或 JSON）
+- 点击"开始导出"即可下载文件
+
 ### 修改密码
 
 默认密码为 `andyr00000`（SHA-256 加密存储在 `nav-data.json` 中）。
@@ -119,7 +139,7 @@ server {
    ```
 3. 将生成的哈希值替换 `adminHash` 字段
 
-## ⚙️ 配置说明
+## ️ 配置说明
 
 ### 数据格式（nav-data.json）
 
@@ -154,6 +174,7 @@ server {
 
 | 版本 | 发布日期 | 主要更新 |
 |------|----------|----------|
+| v1.7.0 | 2026-06-02 | 布局重构：分组拖拽排序、书签简洁布局、数据导出（HTML/JSON） |
 | v1.6.0 | 2026-06-02 | 代码架构优化、加载速度提升、管理员密码更新 |
 | v1.5.0 | 2026-06-01 | 图标优先级优化、Logo 对比度增强 |
 | v1.4.0 | 2026-05-31 | 配色全面优化、视觉动效增强 |
@@ -167,10 +188,10 @@ server {
 git tag -l
 
 # 回滚到指定版本
-git checkout v1.5.0    # 或 v1.4.0, v1.3.0, v1.2.0
+git checkout v1.6.0    # 或 v1.5.0, v1.4.0, v1.3.0, v1.2.0
 
 # 或者创建回滚分支
-git checkout -b rollback-v1.5.0 v1.5.0
+git checkout -b rollback-v1.6.0 v1.6.0
 ```
 
 ## 🛠️ 技术栈
@@ -226,6 +247,7 @@ php -S localhost:8000
 
 ## 🙏 致谢
 
+- 布局参考：[Startab](https://startab.cn/123)
 - 配色灵感：[Happy Hues](https://www.happyhues.co/palettes/10)
 - 图标 API：[Google Favicon Service](https://www.google.com/s2/favicons)
 - 字体：[LXGW 霞鹜文楷](https://github.com/lxgw/LxgwWenkaiTC)
@@ -238,4 +260,4 @@ php -S localhost:8000
 
 ---
 
-**E家导航 v1.6.0** - Copyright © 2026 E家分享
+**E家导航 v1.7.0** - Copyright © 2026 E家分享
